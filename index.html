@@ -4,6 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>나의 진짜 성격 여행</title>
+<!-- 카카오톡·인스타 등에 링크를 보낼 때 보이는 미리보기 정보 -->
+<meta name="description" content="학교, 친구, 시험, 주말 이야기로 알아보는 나만의 성격 유형 💖 24문항 · 약 3분 · 16가지 유형">
+<meta name="theme-color" content="#ffc8de">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:site_name" content="나의 진짜 성격 여행">
+<meta property="og:title" content="나의 진짜 성격을 찾아 떠나는 여행 🌈">
+<meta property="og:description" content="학교, 친구, 시험, 주말 이야기로 알아보는 나만의 성격 유형 💖 24문항 · 약 3분">
+<meta property="og:url" content="https://mbti-jjin5.vercel.app/">
+<meta property="og:image" content="https://mbti-jjin5.vercel.app/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="나의 진짜 성격을 찾아 떠나는 여행 - 파스텔톤 성격 유형 검사">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌈</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Jua&display=swap" rel="stylesheet">
@@ -340,6 +355,14 @@
     margin-top: 18px; font-size: 1.15rem; line-height: 1.45;
     background: rgba(255,255,255,.8); border-radius: 18px; padding: 12px 14px;
   }
+  .shared-note .link-btn {
+    margin-top: 8px;
+    border: none; background: none; cursor: pointer;
+    font-size: 1.1rem; color: var(--lavender-deep);
+    text-decoration: underline; text-underline-offset: 3px;
+  }
+  .bar-row.tie .bar-labels span { color: var(--text); }
+  .tie-note { margin-top: 4px; font-size: 1.1rem; }
 
   .info-card h3 { font-size: 1.3rem; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
   .info-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
@@ -371,6 +394,7 @@
   .match-chip .m-type { font-family: 'Jua', sans-serif; font-size: 1.3rem; color: var(--lavender-deep); }
   .match-chip .m-nick { font-family: 'Gaegu', sans-serif; font-weight: 700; font-size: 1rem; color: var(--text-soft); display: block; }
 
+  .share-btn { width: 100%; font-size: 1.25rem; }
   .result-actions { display: flex; gap: 10px; }
   .result-actions .btn { flex: 1; font-size: 1.15rem; padding: 16px 12px; }
 
@@ -496,6 +520,8 @@
       <ul id="resTips"></ul>
     </div>
 
+    <!-- 휴대폰 공유 창(Web Share API)을 지원하는 브라우저에서만 보임 -->
+    <button class="btn share-btn" id="shareBtn" hidden>친구에게 공유하기 📤</button>
     <div class="result-actions">
       <button class="btn secondary" id="retryBtn">다시 검사하기 🔄</button>
       <button class="btn" id="copyBtn">결과 링크 복사 🔗</button>
@@ -778,7 +804,8 @@ function toPercentages(rawScores) {
 
 /**
  * 백분율에서 4글자 유형을 만든다.
- * 정확히 50%로 동점이면 오른쪽 글자(I/N/F/P)를 택한다.
+ * 정확히 50%로 동점이면 오른쪽 글자(I/N/F/P)를 택하고,
+ * 결과 화면에서 "반반"이라고 따로 알려준다.
  */
 function getTypeCode(pct) {
   return DIMENSIONS.map(d => (pct[d.key] > 50 ? d.left : d.right)).join('');
@@ -877,7 +904,7 @@ function finishTest() {
   showScreen('loading');
   setTimeout(() => {
     history.replaceState(null, '', '#' + type);
-    renderResult(type, pct, false);
+    renderResult(type, pct, 'mine');
   }, 1300);
 }
 
@@ -893,18 +920,25 @@ function fillList(id, items) {
   });
 }
 
+const KICKERS = {
+  mine:   '나의 진짜 성격은...',
+  shared: '친구가 공유한 성격 유형 💌',
+  browse: '찰떡궁합 유형 구경 중 👀'
+};
+
 /**
  * @param {string} type  예: "ENFP"
- * @param {object|null} pct  지표별 왼쪽 비율. 공유 링크로 들어온 경우 null
- * @param {boolean} shared  공유 링크로 들어왔는지
+ * @param {object|null} pct  지표별 왼쪽 비율. 내 결과가 아니면 null
+ * @param {'mine'|'shared'|'browse'} mode
+ *   mine: 내가 검사한 결과 / shared: 공유 링크로 들어옴 / browse: 궁합 카드를 눌러 구경 중
  */
-function renderResult(type, pct, shared) {
+function renderResult(type, pct, mode) {
   const t = TYPES[type];
   const [a, b] = THEMES[t.group];
   document.documentElement.style.setProperty('--theme-a', a);
   document.documentElement.style.setProperty('--theme-b', b);
 
-  $('resultKicker').textContent = shared ? '친구가 공유한 성격 유형 💌' : '나의 진짜 성격은...';
+  $('resultKicker').textContent = KICKERS[mode];
   $('resultEmoji').textContent = t.emoji;
   $('resultType').textContent = type;
   $('resultNick').textContent = t.nick;
@@ -915,14 +949,18 @@ function renderResult(type, pct, shared) {
   const bars = $('bars');
   bars.innerHTML = '';
   if (pct) {
+    const ties = [];
     DIMENSIONS.forEach(d => {
       const left = pct[d.key], right = 100 - left;
       const leftWin = type.includes(d.left);
+      const tie = left === 50;
+      if (tie) ties.push(d);
       const row = document.createElement('div');
-      row.className = 'bar-row' + (leftWin ? '' : ' right-win');
+      row.className = 'bar-row' + (leftWin ? '' : ' right-win') + (tie ? ' tie' : '');
       row.innerHTML =
         `<div class="bar-labels">
            <span class="${leftWin ? 'win' : ''}">${d.left} ${d.leftName} ${left}%</span>
+           ${tie ? '<span>⚖️ 반반</span>' : ''}
            <span class="${leftWin ? '' : 'win'}">${right}% ${d.rightName} ${d.right}</span>
          </div>
          <div class="bar-track"><div class="bar-left"></div><div class="bar-right"></div></div>`;
@@ -932,6 +970,17 @@ function renderResult(type, pct, shared) {
         row.querySelector('.bar-right').style.width = right + '%';
       }));
     });
+    if (ties.length) {
+      const names = ties.map(d => `${d.left}/${d.right}`).join(', ');
+      const picked = ties.map(d => d.right).join(', ');
+      const note = document.createElement('p');
+      note.className = 'shared-note tie-note';
+      note.textContent = `⚖️ ${names} 지표는 딱 반반이에요! 두 성향을 모두 가지고 있어서, 이번 결과에선 ${picked}(으)로 정했어요.`;
+      bars.appendChild(note);
+    }
+  } else if (mode === 'browse') {
+    bars.innerHTML = `<p class="shared-note">💞 나와 잘 맞는 유형을 구경하고 있어요!<br><button class="link-btn" id="backToMine">← 이전 결과로 돌아가기</button></p>`;
+    $('backToMine').addEventListener('click', () => history.back());
   } else {
     bars.innerHTML = `<p class="shared-note">🧭 지표별 비율은 직접 검사해야 볼 수 있어요!<br>나는 어떤 유형일까? 아래 버튼으로 떠나보자 ✨</p>`;
   }
@@ -949,13 +998,19 @@ function renderResult(type, pct, shared) {
     const chip = document.createElement('button');
     chip.className = 'match-chip';
     chip.innerHTML = `<span class="m-emoji">${mt.emoji}</span><span class="m-type">${code}</span><span class="m-nick">${mt.nick}</span>`;
-    chip.addEventListener('click', () => { location.hash = code; });
+    chip.addEventListener('click', () => {
+      browseNext = true;   // 다음 해시 이동은 "구경" 모드로
+      location.hash = code;
+    });
     m.appendChild(chip);
   });
 
-  $('retryBtn').textContent = shared ? '나도 검사하기 🚀' : '다시 검사하기 🔄';
+  $('retryBtn').textContent = mode === 'shared' ? '나도 검사하기 🚀' : '다시 검사하기 🔄';
   showScreen('result');
 }
+
+// 궁합 카드를 눌러서 생긴 해시 이동인지 표시하는 플래그
+let browseNext = false;
 
 /** URL 해시(#ENFP)를 읽어 결과 화면으로 바로 이동 */
 function routeFromHash() {
@@ -965,8 +1020,10 @@ function routeFromHash() {
   // 내가 방금 검사한 결과와 같으면 비율까지 보여주기
   let saved = null;
   try { saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY)); } catch (e) {}
-  if (saved && saved.type === code) renderResult(code, saved.pct, false);
-  else renderResult(code, null, true);
+  const browsing = browseNext;
+  browseNext = false;
+  if (saved && saved.type === code) renderResult(code, saved.pct, 'mine');
+  else renderResult(code, null, browsing ? 'browse' : 'shared');
   return true;
 }
 
@@ -981,8 +1038,26 @@ function showToast(msg) {
   showToast.timer = setTimeout(() => el.classList.remove('show'), 1800);
 }
 
+function resultUrl() {
+  return location.href.split('#')[0] + '#' + $('resultType').textContent;
+}
+
+/** 휴대폰 공유 창 열기 (Web Share API). 지원하지 않거나 실패하면 링크 복사로 대신한다. */
+async function shareResult() {
+  const type = $('resultType').textContent;
+  try {
+    await navigator.share({
+      title: document.title,
+      text: `나는 ${type} ${TYPES[type].nick}! 너는 어떤 유형이야? 🌈`,
+      url: resultUrl()
+    });
+  } catch (e) {
+    if (e.name !== 'AbortError') copyResultLink();   // 사용자가 취소한 경우는 그냥 둔다
+  }
+}
+
 async function copyResultLink() {
-  const url = location.href.split('#')[0] + '#' + $('resultType').textContent;
+  const url = resultUrl();
   try {
     await navigator.clipboard.writeText(url);
   } catch (e) {
@@ -1039,6 +1114,10 @@ $('startBtn').addEventListener('click', startTest);
 $('backBtn').addEventListener('click', goBack);
 $('retryBtn').addEventListener('click', startTest);
 $('copyBtn').addEventListener('click', copyResultLink);
+if (navigator.share) {
+  $('shareBtn').hidden = false;
+  $('shareBtn').addEventListener('click', shareResult);
+}
 window.addEventListener('hashchange', () => {
   if (!routeFromHash() && !location.hash) showScreen('start');
 });
