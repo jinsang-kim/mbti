@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>나의 진짜 성격 여행</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Jua&display=swap" rel="stylesheet">
+<style>
+  /* =========================================================
+     디자인 토큰
+     ========================================================= */
+  :root {
+    --pink: #ffc8de;
+    --pink-deep: #ff8fb8;
+    --lavender: #dccbff;
+    --lavender-deep: #a98bff;
+    --sky: #c6e4ff;
+    --sky-deep: #79b8ff;
+    --mint: #c3f2e1;
+    --mint-deep: #5fd3a9;
+    --peach: #ffd9c2;
+    --text: #5b4a73;
+    --text-soft: #8a7aa3;
+    --card: rgba(255, 255, 255, 0.82);
+    --card-solid: #ffffff;
+    --shadow: 0 10px 30px rgba(155, 120, 200, 0.22);
+    --shadow-soft: 0 4px 14px rgba(155, 120, 200, 0.16);
+    --radius: 28px;
+    --theme-a: var(--pink-deep);
+    --theme-b: var(--lavender-deep);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+
+  body {
+    font-family: 'Gaegu', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    font-weight: 700;
+    color: var(--text);
+    background: linear-gradient(135deg, #ffd6e8 0%, #e6d9ff 33%, #cfe9ff 66%, #c9f5e6 100%);
+    background-size: 300% 300%;
+    animation: bgShift 18s ease-in-out infinite;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+  @keyframes bgShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  h1, h2, h3, .jua, button { font-family: 'Jua', sans-serif; font-weight: 400; }
+
+  /* =========================================================
+     배경 장식 (떠다니는 별/하트/구름/반짝이)
+     ========================================================= */
+  .sky { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .deco {
+    position: absolute;
+    bottom: -60px;
+    user-select: none;
+    animation: floatUp linear infinite;
+    will-change: transform;
+  }
+  @keyframes floatUp {
+    0%   { transform: translate(0, 0) rotate(0deg); }
+    25%  { transform: translate(18px, -30vh) rotate(10deg); }
+    50%  { transform: translate(-14px, -60vh) rotate(-8deg); }
+    75%  { transform: translate(14px, -90vh) rotate(6deg); }
+    100% { transform: translate(0, -125vh) rotate(0deg); }
+  }
+  .twinkle {
+    position: absolute;
+    color: #fff;
+    animation: twinkle ease-in-out infinite;
+    text-shadow: 0 0 8px rgba(255,255,255,.9);
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: .15; transform: scale(.7); }
+    50% { opacity: .9; transform: scale(1.1); }
+  }
+
+  /* =========================================================
+     레이아웃 & 화면 전환
+     ========================================================= */
+  main {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 24px 16px 12px;
+    display: flex;
+    flex-direction: column;
+  }
+  .screen { display: none; flex: 1; flex-direction: column; }
+  .screen.active { display: flex; animation: fadeIn .5s ease both; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card {
+    background: var(--card);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 2px solid rgba(255,255,255,.9);
+    padding: 28px 22px;
+  }
+
+  /* 공통 버튼 */
+  .btn {
+    border: none;
+    cursor: pointer;
+    font-size: 1.25rem;
+    padding: 16px 28px;
+    border-radius: 999px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--pink-deep), var(--lavender-deep));
+    box-shadow: 0 8px 20px rgba(255, 143, 184, .4);
+    transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s;
+  }
+  .btn:hover { transform: scale(1.05); box-shadow: 0 10px 26px rgba(255, 143, 184, .5); }
+  .btn:active { transform: scale(.97); }
+  .btn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+  .btn.secondary {
+    background: #fff;
+    color: var(--lavender-deep);
+    box-shadow: var(--shadow-soft);
+  }
+
+  /* =========================================================
+     시작 화면
+     ========================================================= */
+  #start { justify-content: center; text-align: center; gap: 22px; }
+  .hero-emoji { font-size: 4.2rem; animation: bob 3s ease-in-out infinite; display: inline-block; }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0) rotate(-4deg); }
+    50% { transform: translateY(-10px) rotate(4deg); }
+  }
+  .badge {
+    display: inline-block;
+    font-family: 'Jua', sans-serif;
+    font-size: .95rem;
+    background: #fff;
+    color: var(--pink-deep);
+    padding: 6px 14px;
+    border-radius: 999px;
+    box-shadow: var(--shadow-soft);
+  }
+  #start h1 {
+    font-size: 2.3rem;
+    line-height: 1.25;
+    background: linear-gradient(135deg, #ff6fa5, #9a7bff 60%, #5aa9ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 10px 0 12px;
+  }
+  #start .intro { font-size: 1.3rem; line-height: 1.5; color: var(--text-soft); }
+  .start-meta { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+  .start-meta span {
+    font-size: 1.1rem;
+    background: rgba(255,255,255,.7);
+    padding: 6px 12px;
+    border-radius: 14px;
+  }
+  #start .btn { font-size: 1.4rem; padding: 18px 40px; align-self: center; }
+
+  /* =========================================================
+     문항 화면
+     ========================================================= */
+  .quiz-top { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .back-btn {
+    flex-shrink: 0;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: #fff;
+    color: var(--lavender-deep);
+    font-size: 1.3rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-soft);
+    transition: transform .2s cubic-bezier(.34,1.56,.64,1);
+  }
+  .back-btn:hover { transform: scale(1.1); }
+  .back-btn:active { transform: scale(.94); }
+  .progress-wrap { flex: 1; }
+  .progress-label {
+    display: flex; justify-content: space-between;
+    font-family: 'Jua', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 6px;
+    color: var(--text-soft);
+  }
+  .progress-label b { color: var(--pink-deep); font-weight: 400; }
+  .progress-track {
+    height: 14px;
+    background: rgba(255,255,255,.75);
+    border-radius: 999px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(150,120,200,.15);
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--pink-deep), var(--lavender-deep), var(--sky-deep));
+    transition: width .4s ease;
+    position: relative;
+  }
+  .progress-fill::after {
+    content: '✨';
+    position: absolute; right: -4px; top: 50%;
+    transform: translateY(-50%);
+    font-size: .8rem;
+  }
+
+  .q-card { text-align: center; }
+  .q-card.anim { animation: fadeIn .4s ease both; }
+  .q-emoji { font-size: 3rem; margin-bottom: 8px; }
+  .q-num { font-family: 'Jua', sans-serif; color: var(--lavender-deep); font-size: 1rem; margin-bottom: 10px; }
+  .q-text { font-size: 1.55rem; line-height: 1.45; word-break: keep-all; min-height: 4.4em; display: flex; align-items: center; justify-content: center; }
+
+  .options { display: flex; flex-direction: column; gap: 10px; margin-top: 22px; }
+  .opt {
+    display: flex; align-items: center; gap: 12px;
+    width: 100%;
+    border: 2px solid transparent;
+    background: #fff;
+    color: var(--text);
+    font-size: 1.15rem;
+    padding: 13px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: var(--shadow-soft);
+    text-align: left;
+    transition: transform .2s cubic-bezier(.34,1.56,.64,1), background .2s, border-color .2s;
+  }
+  .opt .dot {
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 3px solid var(--c);
+    background: #fff;
+    transition: background .2s;
+  }
+  .opt:hover { transform: scale(1.03); border-color: var(--c); }
+  .opt:active { transform: scale(.98); }
+  .opt.selected { background: var(--c); color: #fff; border-color: var(--c); }
+  .opt.selected .dot { background: #fff; }
+  .opt .emo { margin-left: auto; font-size: 1.3rem; }
+
+  /* =========================================================
+     로딩 화면
+     ========================================================= */
+  #loading { justify-content: center; align-items: center; text-align: center; gap: 18px; }
+  .spinner { font-size: 4rem; animation: spin 1.4s ease-in-out infinite; display: inline-block; }
+  @keyframes spin { 0% { transform: rotate(0) scale(1); } 50% { transform: rotate(180deg) scale(1.2); } 100% { transform: rotate(360deg) scale(1); } }
+  #loading p { font-family: 'Jua', sans-serif; font-size: 1.4rem; }
+
+  /* =========================================================
+     결과 화면
+     ========================================================= */
+  #result { gap: 16px; }
+  .result-hero {
+    position: relative;
+    text-align: center;
+    padding: 30px 22px 26px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 15% 15%, rgba(255,255,255,.9) 0 8%, transparent 9%),
+      radial-gradient(circle at 85% 25%, rgba(255,255,255,.7) 0 5%, transparent 6%),
+      linear-gradient(160deg, #fff 0%, rgba(255,255,255,.85) 45%, rgba(255,255,255,.6) 100%);
+  }
+  .result-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(160deg, var(--theme-a), var(--theme-b));
+    opacity: .28;
+    z-index: -1;
+  }
+  .result-hero { isolation: isolate; }
+  .hero-sparkles { position: absolute; inset: 0; pointer-events: none; font-size: 1.1rem; }
+  .hero-sparkles span { position: absolute; animation: twinkle 2.6s ease-in-out infinite; }
+  .result-kicker { font-family: 'Jua', sans-serif; font-size: 1.05rem; color: var(--text-soft); }
+  .result-emoji { font-size: 4.5rem; margin: 10px 0 2px; display: inline-block; animation: bob 3s ease-in-out infinite; }
+  .result-type {
+    font-family: 'Jua', sans-serif;
+    font-size: 4.2rem;
+    letter-spacing: 6px;
+    line-height: 1.1;
+    background: linear-gradient(135deg, var(--theme-a), var(--theme-b));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 3px 0 rgba(255,255,255,.9));
+  }
+  .result-nick {
+    display: inline-block;
+    margin-top: 8px;
+    font-family: 'Jua', sans-serif;
+    font-size: 1.35rem;
+    color: #fff;
+    background: linear-gradient(135deg, var(--theme-a), var(--theme-b));
+    padding: 8px 18px;
+    border-radius: 999px;
+    box-shadow: 0 6px 16px rgba(170,130,220,.35);
+  }
+  .result-summary { margin-top: 16px; font-size: 1.25rem; line-height: 1.5; word-break: keep-all; }
+
+  /* 지표 막대 그래프 */
+  .bars { margin-top: 22px; display: flex; flex-direction: column; gap: 14px; text-align: left; }
+  .bar-row .bar-labels {
+    display: flex; justify-content: space-between;
+    font-size: 1.1rem; margin-bottom: 5px; color: var(--text-soft);
+  }
+  .bar-row .bar-labels .win { color: var(--text); font-family: 'Jua', sans-serif; font-size: 1.15rem; }
+  .bar-track {
+    height: 16px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.95);
+    box-shadow: inset 0 2px 4px rgba(150,120,200,.18);
+    overflow: hidden;
+    display: flex;
+  }
+  .bar-left, .bar-right { height: 100%; width: 0; transition: width 1s cubic-bezier(.22,1,.36,1); }
+  .bar-left { background: linear-gradient(90deg, var(--theme-a), var(--theme-b)); border-radius: 999px 0 0 999px; }
+  .bar-right { margin-left: auto; background: linear-gradient(90deg, #e8e0f7, #d9e6f7); border-radius: 0 999px 999px 0; }
+  .bar-row.right-win .bar-left { background: linear-gradient(90deg, #f3dce8, #e8e0f7); }
+  .bar-row.right-win .bar-right { background: linear-gradient(90deg, var(--theme-b), var(--theme-a)); }
+  .shared-note {
+    margin-top: 18px; font-size: 1.15rem; line-height: 1.45;
+    background: rgba(255,255,255,.8); border-radius: 18px; padding: 12px 14px;
+  }
+
+  .info-card h3 { font-size: 1.3rem; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .info-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .info-card li {
+    font-size: 1.18rem; line-height: 1.45; word-break: keep-all;
+    padding-left: 22px; position: relative;
+  }
+  .info-card li::before { content: var(--bullet, '♡'); position: absolute; left: 0; color: var(--theme-a); }
+  .info-card.good  { --bullet: '✦'; }
+  .info-card.care  { --bullet: '☁'; }
+  .info-card.tips  { --bullet: '✎'; }
+  .info-card { padding: 22px 20px; }
+
+  .match-list { display: flex; gap: 10px; flex-wrap: wrap; }
+  .match-chip {
+    flex: 1 1 120px;
+    background: #fff;
+    border-radius: 20px;
+    padding: 12px;
+    text-align: center;
+    box-shadow: var(--shadow-soft);
+    border: none;
+    cursor: pointer;
+    color: var(--text);
+    transition: transform .2s cubic-bezier(.34,1.56,.64,1);
+  }
+  .match-chip:hover { transform: scale(1.05); }
+  .match-chip .m-emoji { font-size: 1.8rem; display: block; }
+  .match-chip .m-type { font-family: 'Jua', sans-serif; font-size: 1.3rem; color: var(--lavender-deep); }
+  .match-chip .m-nick { font-family: 'Gaegu', sans-serif; font-weight: 700; font-size: 1rem; color: var(--text-soft); display: block; }
+
+  .result-actions { display: flex; gap: 10px; }
+  .result-actions .btn { flex: 1; font-size: 1.15rem; padding: 16px 12px; }
+
+  /* 토스트 */
+  .toast {
+    position: fixed; left: 50%; bottom: 40px;
+    transform: translate(-50%, 30px);
+    background: rgba(91,74,115,.92);
+    color: #fff;
+    font-family: 'Jua', sans-serif;
+    padding: 12px 22px;
+    border-radius: 999px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s, transform .3s;
+    z-index: 10;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* 하단 안내 */
+  footer {
+    position: relative; z-index: 1;
+    text-align: center;
+    font-size: .95rem;
+    color: var(--text-soft);
+    padding: 14px 16px 20px;
+    line-height: 1.4;
+    word-break: keep-all;
+  }
+
+  @media (min-width: 768px) {
+    main { padding-top: 48px; }
+    #start h1 { font-size: 2.8rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    .deco { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 배경 장식이 들어갈 곳 (JS로 생성) -->
+<div class="sky" id="sky" aria-hidden="true"></div>
+
+<main>
+  <!-- ===================== 1) 시작 화면 ===================== -->
+  <section class="screen active" id="start">
+    <div class="card">
+      <span class="hero-emoji">🎒</span>
+      <div><span class="badge">✨ 마음 여행 티켓 ✨</span></div>
+      <h1>나의 진짜 성격을<br>찾아 떠나는 여행</h1>
+      <p class="intro">학교, 친구, 시험, 주말 이야기로<br>알아보는 나만의 성격 유형 💖<br>솔직하게 답할수록 정확해져요!</p>
+      <div class="start-meta">
+        <span>📝 24문항</span>
+        <span>⏱️ 약 3분</span>
+        <span>🌈 16가지 유형</span>
+      </div>
+    </div>
+    <button class="btn" id="startBtn">검사 시작하기 🚀</button>
+  </section>
+
+  <!-- ===================== 2) 문항 화면 ===================== -->
+  <section class="screen" id="quiz">
+    <div class="quiz-top">
+      <button class="back-btn" id="backBtn" aria-label="이전 문항으로">←</button>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>마음 여행 중 🧭</span><span><b id="progNow">1</b> / <span id="progTotal">24</span></span></div>
+        <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
+      </div>
+    </div>
+    <div class="card q-card" id="qCard">
+      <div class="q-emoji" id="qEmoji">💬</div>
+      <div class="q-num" id="qNum">Q1</div>
+      <p class="q-text" id="qText"></p>
+    </div>
+    <div class="options" id="options"></div>
+  </section>
+
+  <!-- ===================== 로딩 ===================== -->
+  <section class="screen" id="loading">
+    <span class="spinner">🔮</span>
+    <p>너의 마음 지도를 그리는 중...</p>
+  </section>
+
+  <!-- ===================== 3) 결과 화면 ===================== -->
+  <section class="screen" id="result">
+    <div class="card result-hero" id="resultHero">
+      <div class="hero-sparkles" aria-hidden="true">
+        <span style="left:8%;top:10%">✨</span>
+        <span style="right:10%;top:14%;animation-delay:.6s">💫</span>
+        <span style="left:12%;bottom:30%;animation-delay:1.2s">⭐</span>
+        <span style="right:8%;bottom:38%;animation-delay:1.8s">💖</span>
+      </div>
+      <p class="result-kicker" id="resultKicker">나의 진짜 성격은...</p>
+      <div class="result-emoji" id="resultEmoji">🌈</div>
+      <div class="result-type" id="resultType">ENFP</div>
+      <div class="result-nick" id="resultNick">재기발랄한 활동가</div>
+      <p class="result-summary" id="resultSummary"></p>
+      <div class="bars" id="bars"></div>
+    </div>
+
+    <div class="card info-card">
+      <h3>🌷 이런 성격이에요</h3>
+      <ul id="resTraits"></ul>
+    </div>
+    <div class="card info-card good">
+      <h3>💎 나의 장점</h3>
+      <ul id="resStrengths"></ul>
+    </div>
+    <div class="card info-card care">
+      <h3>🌧️ 이건 조심해요</h3>
+      <ul id="resCautions"></ul>
+    </div>
+    <div class="card info-card">
+      <h3>💞 찰떡궁합 유형</h3>
+      <div class="match-list" id="resMatches"></div>
+    </div>
+    <div class="card info-card tips">
+      <h3>🏫 나에게 어울리는 학교생활 팁</h3>
+      <ul id="resTips"></ul>
+    </div>
+
+    <div class="result-actions">
+      <button class="btn secondary" id="retryBtn">다시 검사하기 🔄</button>
+      <button class="btn" id="copyBtn">결과 링크 복사 🔗</button>
+    </div>
+  </section>
+</main>
+
+<footer>⚠️ 이 검사는 재미로 보는 비공식 성격 검사이며, 공식 MBTI® 검사가 아닙니다</footer>
+
+<div class="toast" id="toast"></div>
+
+<!-- =========================================================
+     데이터: 답변 척도 / 지표 / 문항
+     - pole: "그렇다"고 답할수록 점수가 더해지는 성향
+     - 배열 순서 = 실제 출제 순서 (지표와 방향이 연속되지 않도록 섞어 둠)
+     ========================================================= -->
+<script type="application/json" id="data-scale">
+[
+  { "label": "매우 그렇다",  "value": 2,  "emoji": "😆", "color": "#ff8fb8", "size": 22 },
+  { "label": "그렇다",       "value": 1,  "emoji": "🙂", "color": "#ffb3cf", "size": 18 },
+  { "label": "보통이다",     "value": 0,  "emoji": "😐", "color": "#c9b8ee", "size": 14 },
+  { "label": "아니다",       "value": -1, "emoji": "🙁", "color": "#a9cff5", "size": 18 },
+  { "label": "전혀 아니다",  "value": -2, "emoji": "🙅", "color": "#79b8ff", "size": 22 }
+]
+</script>
+
+<script type="application/json" id="data-dimensions">
+[
+  { "key": "EI", "left": "E", "right": "I", "leftName": "외향", "rightName": "내향" },
+  { "key": "SN", "left": "S", "right": "N", "leftName": "감각", "rightName": "직관" },
+  { "key": "TF", "left": "T", "right": "F", "leftName": "사고", "rightName": "감정" },
+  { "key": "JP", "left": "J", "right": "P", "leftName": "판단", "rightName": "인식" }
+]
+</script>
+
+<script type="application/json" id="data-questions">
+[
+  { "id": 1,  "dim": "EI", "pole": "E", "emoji": "💬", "text": "단톡방에 새 메시지가 오면 바로 답장하고 대화를 이어가는 편이다." },
+  { "id": 2,  "dim": "SN", "pole": "N", "emoji": "☁️", "text": "수업 시간에 멍 때리다 보면 엉뚱한 상상의 나래를 펼치곤 한다." },
+  { "id": 3,  "dim": "TF", "pole": "T", "emoji": "🧩", "text": "친구가 고민을 털어놓으면 공감보다 해결 방법이 먼저 떠오른다." },
+  { "id": 4,  "dim": "JP", "pole": "P", "emoji": "🧳", "text": "여행 갈 때 일정은 대충 정하고, 그때그때 끌리는 곳으로 다니는 게 좋다." },
+
+  { "id": 5,  "dim": "EI", "pole": "I", "emoji": "🎧", "text": "쉬는 시간엔 친구들과 떠드는 것보다 혼자 이어폰 끼고 쉬는 게 더 충전된다." },
+  { "id": 6,  "dim": "SN", "pole": "S", "emoji": "📚", "text": "시험공부는 기출문제와 교과서 내용을 꼼꼼히 외우는 게 제일 믿음직하다." },
+  { "id": 7,  "dim": "TF", "pole": "F", "emoji": "🤝", "text": "조별과제에서는 결과물보다 팀 분위기가 좋은 게 더 중요하다." },
+  { "id": 8,  "dim": "JP", "pole": "J", "emoji": "🗓️", "text": "시험 기간엔 과목별 공부 계획표부터 짜야 마음이 놓인다." },
+
+  { "id": 9,  "dim": "EI", "pole": "E", "emoji": "🎤", "text": "수학여행 장기자랑, 누가 시키지 않아도 한번 나가보고 싶다." },
+  { "id": 10, "dim": "SN", "pole": "N", "emoji": "🔍", "text": "드라마나 웹툰을 보면 숨겨진 의미나 결말을 혼자 추리하는 게 재밌다." },
+  { "id": 11, "dim": "TF", "pole": "F", "emoji": "🥺", "text": "친구가 서운해하면 내가 잘못하지 않았어도 계속 마음이 쓰인다." },
+  { "id": 12, "dim": "JP", "pole": "J", "emoji": "✅", "text": "수행평가는 마감 며칠 전에 미리 끝내 두는 편이다." },
+
+  { "id": 13, "dim": "EI", "pole": "I", "emoji": "🛋️", "text": "주말 약속이 갑자기 취소되면… 솔직히 좀 기쁘다." },
+  { "id": 14, "dim": "SN", "pole": "S", "emoji": "📍", "text": "친구가 얘기할 때 '그래서 정확히 언제, 어디서?' 같은 구체적인 정보가 궁금하다." },
+  { "id": 15, "dim": "TF", "pole": "T", "emoji": "📝", "text": "칭찬보다 정확하고 솔직한 피드백을 들을 때 더 도움이 된다고 느낀다." },
+  { "id": 16, "dim": "JP", "pole": "P", "emoji": "🌤️", "text": "주말 계획은 당일 아침 기분에 따라 정하는 편이다." },
+
+  { "id": 17, "dim": "EI", "pole": "E", "emoji": "👋", "text": "새 학기 첫날, 내가 먼저 옆자리 친구에게 말을 거는 편이다." },
+  { "id": 18, "dim": "SN", "pole": "S", "emoji": "🛤️", "text": "새로운 방법보다 이미 검증된 방법으로 하는 게 마음 편하다." },
+  { "id": 19, "dim": "TF", "pole": "F", "emoji": "😭", "text": "슬픈 영화나 웹툰을 보면 쉽게 눈물이 난다." },
+  { "id": 20, "dim": "JP", "pole": "P", "emoji": "🎢", "text": "갑자기 계획이 바뀌어도 '오히려 좋아!' 하고 즐기는 편이다." },
+
+  { "id": 21, "dim": "EI", "pole": "I", "emoji": "📓", "text": "고민이 생기면 친구에게 말하기 전에 혼자 충분히 생각을 정리해 보는 편이다." },
+  { "id": 22, "dim": "SN", "pole": "N", "emoji": "🪐", "text": "'내가 다른 세계에 태어났다면?' 같은 상상을 하는 게 즐겁다." },
+  { "id": 23, "dim": "TF", "pole": "T", "emoji": "⚖️", "text": "규칙은 친한 친구에게도 똑같이 적용되어야 공평하다고 생각한다." },
+  { "id": 24, "dim": "JP", "pole": "J", "emoji": "🗂️", "text": "책상이나 사물함이 정리되어 있어야 집중이 잘 된다." }
+]
+</script>
+
+<!-- =========================================================
+     데이터: 16가지 유형 설명
+     - group: 결과 화면 색 테마 (NF / NT / SJ / SP)
+     ========================================================= -->
+<script type="application/json" id="data-types">
+{
+  "ISTJ": {
+    "nick": "꼼꼼한 다이어리 장인", "emoji": "📒", "group": "SJ",
+    "summary": "한 번 맡은 일은 끝까지 해내는 믿음직한 친구! 차분하고 성실해서 주변에서 '얘한테 맡기면 안심'이라는 말을 자주 들어요.",
+    "traits": ["계획을 세우고 그대로 실천할 때 뿌듯함을 느껴요.", "말보다 행동으로 마음을 표현하는 편이에요.", "익숙한 루틴과 정돈된 환경에서 편안함을 느껴요."],
+    "strengths": ["약속과 마감을 칼같이 지키는 책임감", "디테일을 놓치지 않는 꼼꼼함", "흔들림 없는 꾸준함과 인내심"],
+    "cautions": ["갑작스러운 변화에 스트레스를 크게 받을 수 있어요.", "내 방식만 옳다고 생각하지 않도록, 친구의 방식도 한번 들어봐요."],
+    "matches": ["ESFP", "ESTP"],
+    "tips": ["플래너에 오늘 할 일을 체크하며 성취감을 쌓아보세요 ✅", "오답노트·요약노트로 정리하는 공부법이 찰떡이에요.", "가끔은 계획 없는 '자유 시간'도 일정에 넣어 쉬어 가기!"]
+  },
+  "ISFJ": {
+    "nick": "다정한 수호천사", "emoji": "🧸", "group": "SJ",
+    "summary": "친구의 작은 변화도 먼저 알아채는 세심한 배려왕! 조용히 곁을 지켜주는 따뜻한 존재예요.",
+    "traits": ["친구의 생일, 좋아하는 간식까지 기억하는 기억력 요정이에요.", "갈등보다는 평화로운 분위기를 좋아해요.", "익숙하고 편한 친구들과 깊은 관계를 맺어요."],
+    "strengths": ["상대를 편안하게 해주는 다정함", "묵묵히 도와주는 헌신과 성실함", "세심한 관찰력"],
+    "cautions": ["거절을 잘 못해서 혼자 짐을 떠안을 수 있어요.", "속상한 마음을 꾹 참기보다 믿는 친구에게 털어놔요."],
+    "matches": ["ESFP", "ESTP"],
+    "tips": ["친한 친구와 함께하는 스터디가 동기부여에 좋아요 📖", "보건·도서·학급 도우미 같은 역할에서 빛나요.", "'싫어'라고 말하는 연습도 나를 지키는 방법이에요."]
+  },
+  "INFJ": {
+    "nick": "신비로운 마음 통역사", "emoji": "🔮", "group": "NF",
+    "summary": "말하지 않아도 친구의 마음을 읽어내는 통찰력의 소유자! 조용하지만 깊은 생각과 따뜻한 신념을 품고 있어요.",
+    "traits": ["사람의 속마음이나 분위기를 빠르게 알아차려요.", "의미 있는 일, 가치 있는 목표에 마음이 움직여요.", "소수의 친구와 깊은 대화를 나누는 걸 좋아해요."],
+    "strengths": ["깊은 공감 능력과 통찰력", "글이나 말로 마음을 전하는 표현력", "자기만의 확고한 가치관"],
+    "cautions": ["혼자 너무 많은 생각을 하다 지칠 수 있어요.", "완벽한 이상을 기준으로 나를 너무 몰아붙이지 않기!"],
+    "matches": ["ENFP", "ENTP"],
+    "tips": ["일기나 감성 노트로 생각을 정리하면 마음이 가벼워져요 🌙", "독서·토론·글쓰기 동아리에서 재능이 빛나요.", "혼자만의 충전 시간을 꼭 챙겨주세요."]
+  },
+  "INTJ": {
+    "nick": "계획 천재 전략가", "emoji": "♟️", "group": "NT",
+    "summary": "머릿속에 이미 큰 그림이 그려져 있는 전략가! 목표가 생기면 가장 효율적인 길을 찾아 차근차근 나아가요.",
+    "traits": ["'왜?'를 끝까지 파고드는 논리파예요.", "혼자 깊이 몰입할 때 최고의 실력을 발휘해요.", "장기적인 목표와 계획을 세우는 걸 좋아해요."],
+    "strengths": ["뛰어난 분석력과 문제 해결력", "목표를 향한 강한 집중력", "독립적이고 주체적인 태도"],
+    "cautions": ["너무 직설적인 말투가 친구에게 차갑게 느껴질 수 있어요.", "감정 표현도 연습하면 관계가 더 단단해져요."],
+    "matches": ["ENFP", "ENTP"],
+    "tips": ["목표 대학·진로 로드맵을 직접 짜보면 동기부여 만렙 🗺️", "개념의 원리를 이해하는 공부법이 잘 맞아요.", "조별과제에선 기획·구성 담당으로 활약해 보세요."]
+  },
+  "ISTP": {
+    "nick": "쿨한 만능 해결사", "emoji": "🛠️", "group": "SP",
+    "summary": "무심한 듯 시크하지만 위기 상황에선 누구보다 침착한 해결사! 손재주와 순발력이 뛰어나요.",
+    "traits": ["말보다 직접 해보면서 배우는 걸 좋아해요.", "간섭받지 않고 내 페이스대로 하는 게 편해요.", "필요할 땐 확실하게, 평소엔 여유롭게!"],
+    "strengths": ["위기에도 흔들리지 않는 침착함", "실용적이고 빠른 문제 해결 능력", "새로운 기술을 금방 익히는 센스"],
+    "cautions": ["관심 없는 일엔 너무 무심해 보일 수 있어요.", "가끔은 친구에게 먼저 마음을 표현해 봐요."],
+    "matches": ["ESFJ", "ESTJ"],
+    "tips": ["실험·실습·만들기 수업에서 실력 발휘 가능 🔧", "짧고 굵게 집중하는 '뽀모도로 공부법'을 추천해요.", "체육·과학·코딩 동아리를 노려 보세요."]
+  },
+  "ISFP": {
+    "nick": "감성 충만 예술가", "emoji": "🎨", "group": "SP",
+    "summary": "하늘 색깔 하나에도 감동하는 감성 부자! 부드럽고 다정하지만 나만의 취향은 확실한 친구예요.",
+    "traits": ["예쁜 것, 감성적인 것에 마음이 잘 움직여요.", "지금 이 순간을 즐기는 걸 좋아해요.", "남을 평가하기보다 있는 그대로 받아들여요."],
+    "strengths": ["뛰어난 미적 감각과 센스", "따뜻하고 너그러운 마음", "자연스럽게 분위기를 편하게 만드는 능력"],
+    "cautions": ["갈등을 피하다 보면 속마음이 쌓일 수 있어요.", "미루기 습관이 생기지 않도록 작은 목표부터 세워봐요."],
+    "matches": ["ENFJ", "ESFJ", "ESTJ"],
+    "tips": ["필기도 예쁘게! 컬러펜 노트가 공부 의욕을 올려줘요 🖍️", "미술·음악·사진 동아리에서 감성을 펼쳐 보세요.", "좋아하는 음악과 함께하는 공부 루틴을 만들어 봐요."]
+  },
+  "INFP": {
+    "nick": "몽글몽글 꿈꾸는 시인", "emoji": "🌙", "group": "NF",
+    "summary": "마음속에 나만의 작은 우주를 품고 있는 몽상가! 순수하고 다정해서 친구의 아픔에 진심으로 공감해요.",
+    "traits": ["상상하고 이야기 만드는 걸 좋아해요.", "내가 진짜 좋아하는 것에는 엄청난 열정을 쏟아요.", "혼자 있는 시간에 감정을 정리해요."],
+    "strengths": ["깊은 공감력과 따뜻한 마음", "풍부한 상상력과 창의력", "진정성 있는 태도"],
+    "cautions": ["작은 말에도 상처받고 오래 곱씹을 수 있어요.", "현실적인 계획도 조금씩 함께 세워봐요."],
+    "matches": ["ENFJ", "ENTJ"],
+    "tips": ["좋아하는 과목부터 시작해 공부 엔진을 데워 보세요 🔥", "문예·연극·웹툰 동아리에서 재능이 꽃펴요.", "마음이 복잡할 땐 감정 일기를 써보세요."]
+  },
+  "INTP": {
+    "nick": "호기심 폭발 탐구자", "emoji": "🔭", "group": "NT",
+    "summary": "궁금한 게 생기면 밤새 검색하는 지식 탐험가! 독특한 아이디어와 날카로운 논리를 가졌어요.",
+    "traits": ["원리와 이유를 이해해야 직성이 풀려요.", "엉뚱하지만 기발한 생각을 자주 해요.", "혼자만의 생각에 깊이 빠져드는 시간이 많아요."],
+    "strengths": ["논리적인 사고력과 분석력", "새로운 관점으로 보는 창의성", "편견 없이 생각하는 열린 마음"],
+    "cautions": ["관심 없는 과제는 자꾸 미루게 될 수 있어요.", "생각을 말로 표현하는 연습을 하면 오해가 줄어요."],
+    "matches": ["ENTJ", "ESTJ"],
+    "tips": ["'왜 그럴까?' 질문하며 공부하면 기억에 오래 남아요 🧠", "과학 탐구·수학·코딩 동아리를 추천해요.", "마감 알람을 맞춰 두면 미루기 방지에 효과 만점!"]
+  },
+  "ESTP": {
+    "nick": "직진하는 모험가", "emoji": "🛹", "group": "SP",
+    "summary": "생각보다 몸이 먼저 움직이는 행동파! 에너지 넘치고 재치 있어서 어디서든 금방 친구를 사귀어요.",
+    "traits": ["새롭고 짜릿한 경험을 좋아해요.", "현실 감각이 뛰어나고 눈치가 빨라요.", "지루한 건 못 참아요!"],
+    "strengths": ["빠른 판단력과 실행력", "어떤 상황에도 적응하는 순발력", "주변을 즐겁게 만드는 유쾌함"],
+    "cautions": ["즉흥적인 결정으로 나중에 후회할 수 있어요.", "장기 목표를 위해 조금만 더 참는 연습도 필요해요."],
+    "matches": ["ISFJ", "ISTJ"],
+    "tips": ["친구와 퀴즈 대결하듯 공부하면 집중력 UP ⚡", "체육대회·축제 준비에서 리더로 활약해 보세요.", "공부는 짧게 여러 번! 타이머를 활용해 봐요."]
+  },
+  "ESFP": {
+    "nick": "반짝반짝 분위기 메이커", "emoji": "🎤", "group": "SP",
+    "summary": "교실의 비타민! 있는 곳마다 웃음꽃이 피는 타고난 엔터테이너예요.",
+    "traits": ["사람들과 어울리는 게 제일 즐거워요.", "지금 이 순간의 행복을 소중히 여겨요.", "리액션 부자라 대화가 늘 재밌어요."],
+    "strengths": ["밝고 긍정적인 에너지", "친구를 잘 챙기는 따뜻함", "센스 있는 패션·트렌드 감각"],
+    "cautions": ["재밌는 일에 빠져 해야 할 일을 놓칠 수 있어요.", "충동구매·즉흥 약속은 한 번만 더 생각해 봐요."],
+    "matches": ["ISFJ", "ISTJ"],
+    "tips": ["친구에게 설명해주며 공부하면 기억이 쏙쏙 🗣️", "축제·방송부·댄스 동아리에서 끼를 발산해 보세요.", "재밌는 보상을 걸고 공부 목표를 세워봐요!"]
+  },
+  "ENFP": {
+    "nick": "재기발랄한 활동가", "emoji": "🌈", "group": "NF",
+    "summary": "아이디어가 톡톡 튀는 행복 바이러스! 호기심 많고 열정적이라 함께 있으면 뭐든 재밌어져요.",
+    "traits": ["새로운 사람, 새로운 경험에 늘 설레요.", "관심 있는 일엔 누구보다 열정적이에요.", "감정 표현이 풍부하고 솔직해요."],
+    "strengths": ["반짝이는 창의력과 상상력", "누구와도 친해지는 친화력", "주변을 응원하는 긍정 에너지"],
+    "cautions": ["시작은 많은데 마무리가 약할 수 있어요.", "기분에 따라 컨디션이 오르락내리락할 수 있어요."],
+    "matches": ["INFJ", "INTJ"],
+    "tips": ["마인드맵으로 공부 내용을 정리하면 머리에 쏙 🌟", "학생회·축제 기획·영상 제작에서 아이디어가 빛나요.", "할 일 3개만 정해서 하나씩 끝내는 연습을 해봐요."]
+  },
+  "ENTP": {
+    "nick": "아이디어 뱅크 토론왕", "emoji": "💡", "group": "NT",
+    "summary": "'근데 그거 꼭 그래야 해?' 새로운 질문을 던지는 발상의 천재! 말솜씨와 재치로 토론을 주도해요.",
+    "traits": ["틀에 박힌 방식보다 새로운 방법을 찾아요.", "논쟁도 재밌는 게임처럼 즐겨요.", "다양한 분야에 관심이 많아요."],
+    "strengths": ["기발한 아이디어와 순발력", "설득력 있는 말솜씨", "도전을 두려워하지 않는 용기"],
+    "cautions": ["장난스러운 반박이 친구에게 상처가 될 수 있어요.", "흥미가 식으면 금방 다른 일로 넘어갈 수 있어요."],
+    "matches": ["INFJ", "INTJ"],
+    "tips": ["토론·발표 수업은 나의 무대! 적극적으로 도전해요 🎙️", "한 과목을 '선생님처럼 설명하기'로 공부해 보세요.", "시작한 프로젝트는 끝까지 완주하는 경험을 쌓아봐요."]
+  },
+  "ESTJ": {
+    "nick": "믿음직한 반장님", "emoji": "📋", "group": "SJ",
+    "summary": "체계적이고 추진력 있는 타고난 리더! 모두가 우왕좌왕할 때 '이렇게 하자'고 길을 정리해줘요.",
+    "traits": ["규칙과 질서를 중요하게 생각해요.", "일을 효율적으로 나누고 이끄는 걸 잘해요.", "솔직하고 분명하게 의견을 말해요."],
+    "strengths": ["강한 책임감과 리더십", "현실적이고 체계적인 계획력", "결정을 빠르게 내리는 추진력"],
+    "cautions": ["내 기준을 친구에게 강요하지 않도록 조심해요.", "결과만큼 친구들의 마음도 살펴봐요."],
+    "matches": ["ISFP", "ISTP", "INTP"],
+    "tips": ["반장·부장·학생회에서 리더십을 발휘해 보세요 👑", "시간표형 공부 계획이 효율 최고예요.", "조별과제에서 '고마워'를 자주 말하면 팀워크 만점!"]
+  },
+  "ESFJ": {
+    "nick": "모두의 다정한 친구", "emoji": "💐", "group": "SJ",
+    "summary": "반 친구들을 하나로 묶어주는 따뜻한 연결고리! 다정한 말 한마디로 모두를 기분 좋게 만들어요.",
+    "traits": ["친구들이 즐거워하는 모습에 행복을 느껴요.", "단체 활동과 이벤트 챙기는 걸 좋아해요.", "예의와 배려를 중요하게 생각해요."],
+    "strengths": ["뛰어난 공감력과 사교성", "모두를 챙기는 배려심", "협동을 이끄는 팀워크 능력"],
+    "cautions": ["다른 사람의 시선을 너무 신경 쓸 수 있어요.", "모두를 만족시키려다 내가 지치지 않게 해요."],
+    "matches": ["ISFP", "ISTP"],
+    "tips": ["친구와 함께하는 그룹 스터디가 잘 맞아요 👭", "학급 행사·봉사 동아리에서 빛나요.", "나를 위한 칭찬도 하루 한 번 해주기!"]
+  },
+  "ENFJ": {
+    "nick": "따뜻한 응원단장", "emoji": "📣", "group": "NF",
+    "summary": "친구의 가능성을 먼저 알아보고 응원해주는 다정한 리더! 사람을 움직이는 따뜻한 힘이 있어요.",
+    "traits": ["친구가 성장하는 모습을 보면 내 일처럼 기뻐요.", "분위기를 읽고 모두를 하나로 모아요.", "말로 마음을 전하는 데 능숙해요."],
+    "strengths": ["사람을 이끄는 따뜻한 카리스마", "깊은 공감과 소통 능력", "모두를 위한 책임감"],
+    "cautions": ["남의 고민까지 떠안아 지칠 수 있어요.", "내 감정도 친구들 감정만큼 소중히 돌봐요."],
+    "matches": ["INFP", "ISFP"],
+    "tips": ["멘토링·또래 상담 활동이 잘 어울려요 💗", "발표와 토론에서 설득력이 빛나요.", "가끔은 혼자만의 휴식 시간을 꼭 만들어요."]
+  },
+  "ENTJ": {
+    "nick": "카리스마 리더", "emoji": "👑", "group": "NT",
+    "summary": "목표가 생기면 거침없이 밀고 나가는 당당한 리더! 큰 꿈을 현실로 만드는 실행력이 있어요.",
+    "traits": ["도전적인 목표에 가슴이 뛰어요.", "효율적인 방법을 빠르게 찾아내요.", "자신감 있고 결단력 있어요."],
+    "strengths": ["강력한 추진력과 결단력", "전체를 보는 전략적 사고", "어려움을 이겨내는 의지"],
+    "cautions": ["속도가 빨라 친구들이 따라오기 힘들 수 있어요.", "가끔은 결과보다 과정을 함께 즐겨봐요."],
+    "matches": ["INFP", "INTP"],
+    "tips": ["학생회·대회 준비처럼 목표가 뚜렷한 활동이 찰떡 🏆", "주간 목표 → 일일 목표로 쪼개는 공부법을 추천해요.", "팀원의 의견을 먼저 묻는 습관이 진짜 리더를 만들어요."]
+  }
+}
+</script>
+
+<script>
+/* =========================================================
+   데이터 로드
+   ========================================================= */
+const SCALE      = JSON.parse(document.getElementById('data-scale').textContent);
+const DIMENSIONS = JSON.parse(document.getElementById('data-dimensions').textContent);
+const QUESTIONS  = JSON.parse(document.getElementById('data-questions').textContent);
+const TYPES      = JSON.parse(document.getElementById('data-types').textContent);
+
+// 유형 그룹별 결과 화면 색 테마
+const THEMES = {
+  NF: ['#ff8fb8', '#a98bff'],
+  NT: ['#a98bff', '#79b8ff'],
+  SJ: ['#79b8ff', '#5fd3a9'],
+  SP: ['#ff9f8f', '#ff8fb8']
+};
+
+const STORAGE_KEY = 'mbti-trip-last-result';
+
+/* =========================================================
+   점수 계산 로직
+   ========================================================= */
+
+/**
+ * 지표별 원점수를 계산한다.
+ * - 각 답변의 value(+2 ~ -2)를 문항의 pole 방향으로 더한다.
+ * - pole이 지표의 왼쪽 글자(E/S/T/J)면 +value, 오른쪽 글자(I/N/F/P)면 -value.
+ * - 결과: 양수일수록 왼쪽 성향, 음수일수록 오른쪽 성향.
+ * @param {(number|null)[]} answers 문항 순서대로의 답변 value 배열
+ * @returns {{[dimKey: string]: {raw: number, max: number}}}
+ */
+function calculateRawScores(answers) {
+  const scores = {};
+  DIMENSIONS.forEach(d => { scores[d.key] = { raw: 0, max: 0 }; });
+
+  QUESTIONS.forEach((q, i) => {
+    const value = answers[i] ?? 0;
+    const dim = DIMENSIONS.find(d => d.key === q.dim);
+    const sign = q.pole === dim.left ? 1 : -1;
+    scores[q.dim].raw += sign * value;
+    scores[q.dim].max += 2; // 문항당 최대 2점
+  });
+  return scores;
+}
+
+/**
+ * 원점수를 왼쪽 성향의 백분율(0~100)로 바꾼다.
+ * raw = +max 이면 100%, 0 이면 50%, -max 이면 0%.
+ * @returns {{[dimKey: string]: number}} 왼쪽 글자의 비율(%)
+ */
+function toPercentages(rawScores) {
+  const pct = {};
+  Object.entries(rawScores).forEach(([key, s]) => {
+    pct[key] = Math.round(50 + (s.raw / s.max) * 50);
+  });
+  return pct;
+}
+
+/**
+ * 백분율에서 4글자 유형을 만든다.
+ * 정확히 50%로 동점이면 오른쪽 글자(I/N/F/P)를 택한다.
+ */
+function getTypeCode(pct) {
+  return DIMENSIONS.map(d => (pct[d.key] > 50 ? d.left : d.right)).join('');
+}
+
+/* =========================================================
+   상태 & 화면 전환
+   ========================================================= */
+const state = {
+  current: 0,
+  answers: new Array(QUESTIONS.length).fill(null),
+  locked: false   // 자동 넘김 애니메이션 중 중복 클릭 방지
+};
+
+const $ = id => document.getElementById(id);
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* =========================================================
+   문항 화면
+   ========================================================= */
+function renderQuestion() {
+  const q = QUESTIONS[state.current];
+  const total = QUESTIONS.length;
+
+  $('progNow').textContent = state.current + 1;
+  $('progTotal').textContent = total;
+  $('progFill').style.width = ((state.current + 1) / total * 100) + '%';
+
+  // 카드 페이드 애니메이션 재시작
+  const card = $('qCard');
+  card.classList.remove('anim');
+  void card.offsetWidth;
+  card.classList.add('anim');
+
+  $('qEmoji').textContent = q.emoji;
+  $('qNum').textContent = 'Q' + (state.current + 1);
+  $('qText').textContent = q.text;
+
+  const box = $('options');
+  box.innerHTML = '';
+  SCALE.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt' + (state.answers[state.current] === opt.value ? ' selected' : '');
+    btn.style.setProperty('--c', opt.color);
+    btn.innerHTML =
+      `<span class="dot" style="width:${opt.size}px;height:${opt.size}px"></span>` +
+      `<span>${opt.label}</span><span class="emo">${opt.emoji}</span>`;
+    btn.addEventListener('click', () => selectAnswer(opt.value, btn));
+    box.appendChild(btn);
+  });
+}
+
+function selectAnswer(value, btn) {
+  if (state.locked) return;
+  state.locked = true;
+  state.answers[state.current] = value;
+  document.querySelectorAll('.opt').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+
+  // 살짝 기다렸다가 자동으로 다음 문항
+  setTimeout(() => {
+    state.locked = false;
+    if (state.current < QUESTIONS.length - 1) {
+      state.current++;
+      renderQuestion();
+    } else {
+      finishTest();
+    }
+  }, 280);
+}
+
+function goBack() {
+  if (state.locked) return;
+  if (state.current === 0) { showScreen('start'); return; }
+  state.current--;
+  renderQuestion();
+}
+
+function startTest() {
+  state.current = 0;
+  state.answers.fill(null);
+  history.replaceState(null, '', location.pathname + location.search);
+  renderQuestion();
+  showScreen('quiz');
+}
+
+function finishTest() {
+  const pct = toPercentages(calculateRawScores(state.answers));
+  const type = getTypeCode(pct);
+  try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ type, pct })); } catch (e) {}
+
+  showScreen('loading');
+  setTimeout(() => {
+    history.replaceState(null, '', '#' + type);
+    renderResult(type, pct, false);
+  }, 1300);
+}
+
+/* =========================================================
+   결과 화면
+   ========================================================= */
+function fillList(id, items) {
+  $(id).innerHTML = '';
+  items.forEach(t => {
+    const li = document.createElement('li');
+    li.textContent = t;
+    $(id).appendChild(li);
+  });
+}
+
+/**
+ * @param {string} type  예: "ENFP"
+ * @param {object|null} pct  지표별 왼쪽 비율. 공유 링크로 들어온 경우 null
+ * @param {boolean} shared  공유 링크로 들어왔는지
+ */
+function renderResult(type, pct, shared) {
+  const t = TYPES[type];
+  const [a, b] = THEMES[t.group];
+  document.documentElement.style.setProperty('--theme-a', a);
+  document.documentElement.style.setProperty('--theme-b', b);
+
+  $('resultKicker').textContent = shared ? '친구가 공유한 성격 유형 💌' : '나의 진짜 성격은...';
+  $('resultEmoji').textContent = t.emoji;
+  $('resultType').textContent = type;
+  $('resultNick').textContent = t.nick;
+  $('resultSummary').textContent = t.summary;
+  document.title = `${type} ${t.nick} | 나의 진짜 성격 여행`;
+
+  // 지표 막대 그래프
+  const bars = $('bars');
+  bars.innerHTML = '';
+  if (pct) {
+    DIMENSIONS.forEach(d => {
+      const left = pct[d.key], right = 100 - left;
+      const leftWin = type.includes(d.left);
+      const row = document.createElement('div');
+      row.className = 'bar-row' + (leftWin ? '' : ' right-win');
+      row.innerHTML =
+        `<div class="bar-labels">
+           <span class="${leftWin ? 'win' : ''}">${d.left} ${d.leftName} ${left}%</span>
+           <span class="${leftWin ? '' : 'win'}">${right}% ${d.rightName} ${d.right}</span>
+         </div>
+         <div class="bar-track"><div class="bar-left"></div><div class="bar-right"></div></div>`;
+      bars.appendChild(row);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        row.querySelector('.bar-left').style.width = left + '%';
+        row.querySelector('.bar-right').style.width = right + '%';
+      }));
+    });
+  } else {
+    bars.innerHTML = `<p class="shared-note">🧭 지표별 비율은 직접 검사해야 볼 수 있어요!<br>나는 어떤 유형일까? 아래 버튼으로 떠나보자 ✨</p>`;
+  }
+
+  fillList('resTraits', t.traits);
+  fillList('resStrengths', t.strengths);
+  fillList('resCautions', t.cautions);
+  fillList('resTips', t.tips);
+
+  // 잘 맞는 유형 (누르면 그 유형 설명 보기)
+  const m = $('resMatches');
+  m.innerHTML = '';
+  t.matches.forEach(code => {
+    const mt = TYPES[code];
+    const chip = document.createElement('button');
+    chip.className = 'match-chip';
+    chip.innerHTML = `<span class="m-emoji">${mt.emoji}</span><span class="m-type">${code}</span><span class="m-nick">${mt.nick}</span>`;
+    chip.addEventListener('click', () => { location.hash = code; });
+    m.appendChild(chip);
+  });
+
+  $('retryBtn').textContent = shared ? '나도 검사하기 🚀' : '다시 검사하기 🔄';
+  showScreen('result');
+}
+
+/** URL 해시(#ENFP)를 읽어 결과 화면으로 바로 이동 */
+function routeFromHash() {
+  const code = decodeURIComponent(location.hash.slice(1)).toUpperCase();
+  if (!TYPES[code]) return false;
+
+  // 내가 방금 검사한 결과와 같으면 비율까지 보여주기
+  let saved = null;
+  try { saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY)); } catch (e) {}
+  if (saved && saved.type === code) renderResult(code, saved.pct, false);
+  else renderResult(code, null, true);
+  return true;
+}
+
+/* =========================================================
+   링크 복사 & 토스트
+   ========================================================= */
+function showToast(msg) {
+  const el = $('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(showToast.timer);
+  showToast.timer = setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+async function copyResultLink() {
+  const url = location.href.split('#')[0] + '#' + $('resultType').textContent;
+  try {
+    await navigator.clipboard.writeText(url);
+  } catch (e) {
+    // clipboard API를 못 쓰는 환경용 대체 방법
+    const ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (err) {}
+    ta.remove();
+  }
+  showToast('링크를 복사했어요! 친구에게 공유해봐 💌');
+}
+
+/* =========================================================
+   배경 장식 생성
+   ========================================================= */
+function createDecorations() {
+  const sky = $('sky');
+  const icons = ['⭐', '💖', '☁️', '✨', '🌸', '💫', '💗', '☁️', '🌟'];
+  const count = window.innerWidth < 600 ? 14 : 22;
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('span');
+    el.className = 'deco';
+    el.textContent = icons[i % icons.length];
+    const size = 14 + Math.random() * 22;
+    el.style.left = (Math.random() * 100) + '%';
+    el.style.fontSize = size + 'px';
+    el.style.opacity = (0.3 + Math.random() * 0.35).toFixed(2);
+    const dur = 16 + Math.random() * 18;
+    el.style.animationDuration = dur + 's';
+    el.style.animationDelay = (-Math.random() * dur) + 's';
+    sky.appendChild(el);
+  }
+  for (let i = 0; i < 16; i++) {
+    const s = document.createElement('span');
+    s.className = 'twinkle';
+    s.textContent = '✦';
+    s.style.left = (Math.random() * 100) + '%';
+    s.style.top = (Math.random() * 100) + '%';
+    s.style.fontSize = (8 + Math.random() * 10) + 'px';
+    s.style.animationDuration = (2 + Math.random() * 3) + 's';
+    s.style.animationDelay = (Math.random() * 3) + 's';
+    sky.appendChild(s);
+  }
+}
+
+/* =========================================================
+   초기화
+   ========================================================= */
+$('startBtn').addEventListener('click', startTest);
+$('backBtn').addEventListener('click', goBack);
+$('retryBtn').addEventListener('click', startTest);
+$('copyBtn').addEventListener('click', copyResultLink);
+window.addEventListener('hashchange', () => {
+  if (!routeFromHash() && !location.hash) showScreen('start');
+});
+
+createDecorations();
+routeFromHash();
+</script>
+</body>
+</html>
