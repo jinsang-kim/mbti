@@ -316,7 +316,15 @@
   .hero-sparkles { position: absolute; inset: 0; pointer-events: none; font-size: 1.1rem; }
   .hero-sparkles span { position: absolute; animation: twinkle 2.6s ease-in-out infinite; }
   .result-kicker { font-family: 'Jua', sans-serif; font-size: 1.05rem; color: var(--text-soft); }
-  .result-emoji { font-size: 4.5rem; margin: 10px 0 2px; display: inline-block; animation: bob 3s ease-in-out infinite; }
+  .result-img {
+    display: block;
+    width: 180px; height: 180px;
+    margin: 14px auto 8px;
+    object-fit: cover;
+    border-radius: 24px;
+    border: 4px solid #fff;
+    box-shadow: var(--shadow);
+  }
   .result-type {
     font-family: 'Jua', sans-serif;
     font-size: 4.2rem;
@@ -340,6 +348,7 @@
     box-shadow: 0 6px 16px rgba(170,130,220,.35);
   }
   .result-summary { margin-top: 16px; font-size: 1.25rem; line-height: 1.5; word-break: keep-all; }
+  .result-book { font-family: 'Jua', sans-serif; font-size: 1.05rem; color: var(--text-soft); margin-top: 8px; }
 
   /* 지표 막대 그래프 */
   .bars { margin-top: 22px; display: flex; flex-direction: column; gap: 14px; text-align: left; }
@@ -375,15 +384,6 @@
   .tie-note { margin-top: 4px; font-size: 1.1rem; }
 
   .info-card h3 { font-size: 1.3rem; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-  .info-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-  .info-card li {
-    font-size: 1.18rem; line-height: 1.45; word-break: keep-all;
-    padding-left: 22px; position: relative;
-  }
-  .info-card li::before { content: var(--bullet, '♡'); position: absolute; left: 0; color: var(--theme-a); }
-  .info-card.good  { --bullet: '✦'; }
-  .info-card.care  { --bullet: '☁'; }
-  .info-card.tips  { --bullet: '✎'; }
   .info-card { padding: 22px 20px; }
 
   .match-list { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -400,7 +400,7 @@
     transition: transform .2s cubic-bezier(.34,1.56,.64,1);
   }
   .match-chip:hover { transform: scale(1.05); }
-  .match-chip .m-emoji { font-size: 1.8rem; display: block; }
+  .match-chip .m-img { width: 72px; height: 72px; object-fit: cover; border-radius: 16px; display: block; margin: 0 auto 6px; }
   .match-chip .m-type { font-family: 'Jua', sans-serif; font-size: 1.3rem; color: var(--lavender-deep); }
   .match-chip .m-nick { font-family: 'Gaegu', sans-serif; font-weight: 700; font-size: 1rem; color: var(--text-soft); display: block; }
 
@@ -504,32 +504,17 @@
         <span style="right:8%;bottom:38%;animation-delay:1.8s">💖</span>
       </div>
       <p class="result-kicker" id="resultKicker">나의 진짜 성격은...</p>
-      <div class="result-emoji" id="resultEmoji">🌈</div>
+      <img class="result-img" id="resultImg" src="" alt="">
       <div class="result-type" id="resultType">ENFP</div>
-      <div class="result-nick" id="resultNick">재기발랄한 활동가</div>
+      <div class="result-nick" id="resultNick"></div>
+      <p class="result-book" id="resultBook"></p>
       <p class="result-summary" id="resultSummary"></p>
       <div class="bars" id="bars"></div>
     </div>
 
     <div class="card info-card">
-      <h3>🌷 이런 성격이에요</h3>
-      <ul id="resTraits"></ul>
-    </div>
-    <div class="card info-card good">
-      <h3>💎 나의 장점</h3>
-      <ul id="resStrengths"></ul>
-    </div>
-    <div class="card info-card care">
-      <h3>🌧️ 이건 조심해요</h3>
-      <ul id="resCautions"></ul>
-    </div>
-    <div class="card info-card">
       <h3>💞 찰떡궁합 유형</h3>
       <div class="match-list" id="resMatches"></div>
-    </div>
-    <div class="card info-card tips">
-      <h3>🏫 나에게 어울리는 학교생활 팁</h3>
-      <ul id="resTips"></ul>
     </div>
 
     <!-- 휴대폰 공유 창(Web Share API)을 지원하는 브라우저에서만 보임 -->
@@ -639,154 +624,60 @@
 
 <!-- =========================================================
      데이터: 16가지 유형 설명
+     - character / book: 유형을 대표하는 문학 작품 속 인물
+     - image: 인물 그림 (images/ 폴더)
      - group: 결과 화면 색 테마 (NF / NT / SJ / SP)
      ========================================================= -->
 <script type="application/json" id="data-types">
 {
-  "ISTJ": {
-    "nick": "꼼꼼한 다이어리 장인", "emoji": "📒", "group": "SJ",
-    "summary": "한 번 맡은 일은 끝까지 해내는 믿음직한 친구! 차분하고 성실해서 주변에서 '얘한테 맡기면 안심'이라는 말을 자주 들어요.",
-    "traits": ["계획을 세우고 그대로 실천할 때 뿌듯함을 느껴요.", "말보다 행동으로 마음을 표현하는 편이에요.", "익숙한 루틴과 정돈된 환경에서 편안함을 느껴요."],
-    "strengths": ["약속과 마감을 칼같이 지키는 책임감", "디테일을 놓치지 않는 꼼꼼함", "흔들림 없는 꾸준함과 인내심"],
-    "cautions": ["갑작스러운 변화에 스트레스를 크게 받을 수 있어요.", "내 방식만 옳다고 생각하지 않도록, 친구의 방식도 한번 들어봐요."],
-    "matches": ["ESFP", "ESTP"],
-    "tips": ["플래너에 오늘 할 일을 체크하며 성취감을 쌓아보세요 ✅", "오답노트·요약노트로 정리하는 공부법이 찰떡이에요.", "가끔은 계획 없는 '자유 시간'도 일정에 넣어 쉬어 가기!"]
-  },
-  "ISFJ": {
-    "nick": "다정한 수호천사", "emoji": "🧸", "group": "SJ",
-    "summary": "친구의 작은 변화도 먼저 알아채는 세심한 배려왕! 조용히 곁을 지켜주는 따뜻한 존재예요.",
-    "traits": ["친구의 생일, 좋아하는 간식까지 기억하는 기억력 요정이에요.", "갈등보다는 평화로운 분위기를 좋아해요.", "익숙하고 편한 친구들과 깊은 관계를 맺어요."],
-    "strengths": ["상대를 편안하게 해주는 다정함", "묵묵히 도와주는 헌신과 성실함", "세심한 관찰력"],
-    "cautions": ["거절을 잘 못해서 혼자 짐을 떠안을 수 있어요.", "속상한 마음을 꾹 참기보다 믿는 친구에게 털어놔요."],
-    "matches": ["ESFP", "ESTP"],
-    "tips": ["친한 친구와 함께하는 스터디가 동기부여에 좋아요 📖", "보건·도서·학급 도우미 같은 역할에서 빛나요.", "'싫어'라고 말하는 연습도 나를 지키는 방법이에요."]
-  },
-  "INFJ": {
-    "nick": "신비로운 마음 통역사", "emoji": "🔮", "group": "NF",
-    "summary": "말하지 않아도 친구의 마음을 읽어내는 통찰력의 소유자! 조용하지만 깊은 생각과 따뜻한 신념을 품고 있어요.",
-    "traits": ["사람의 속마음이나 분위기를 빠르게 알아차려요.", "의미 있는 일, 가치 있는 목표에 마음이 움직여요.", "소수의 친구와 깊은 대화를 나누는 걸 좋아해요."],
-    "strengths": ["깊은 공감 능력과 통찰력", "글이나 말로 마음을 전하는 표현력", "자기만의 확고한 가치관"],
-    "cautions": ["혼자 너무 많은 생각을 하다 지칠 수 있어요.", "완벽한 이상을 기준으로 나를 너무 몰아붙이지 않기!"],
-    "matches": ["ENFP", "ENTP"],
-    "tips": ["일기나 감성 노트로 생각을 정리하면 마음이 가벼워져요 🌙", "독서·토론·글쓰기 동아리에서 재능이 빛나요.", "혼자만의 충전 시간을 꼭 챙겨주세요."]
-  },
-  "INTJ": {
-    "nick": "계획 천재 전략가", "emoji": "♟️", "group": "NT",
-    "summary": "머릿속에 이미 큰 그림이 그려져 있는 전략가! 목표가 생기면 가장 효율적인 길을 찾아 차근차근 나아가요.",
-    "traits": ["'왜?'를 끝까지 파고드는 논리파예요.", "혼자 깊이 몰입할 때 최고의 실력을 발휘해요.", "장기적인 목표와 계획을 세우는 걸 좋아해요."],
-    "strengths": ["뛰어난 분석력과 문제 해결력", "목표를 향한 강한 집중력", "독립적이고 주체적인 태도"],
-    "cautions": ["너무 직설적인 말투가 친구에게 차갑게 느껴질 수 있어요.", "감정 표현도 연습하면 관계가 더 단단해져요."],
-    "matches": ["ENFP", "ENTP"],
-    "tips": ["목표 대학·진로 로드맵을 직접 짜보면 동기부여 만렙 🗺️", "개념의 원리를 이해하는 공부법이 잘 맞아요.", "조별과제에선 기획·구성 담당으로 활약해 보세요."]
-  },
-  "ISTP": {
-    "nick": "쿨한 만능 해결사", "emoji": "🛠️", "group": "SP",
-    "summary": "무심한 듯 시크하지만 위기 상황에선 누구보다 침착한 해결사! 손재주와 순발력이 뛰어나요.",
-    "traits": ["말보다 직접 해보면서 배우는 걸 좋아해요.", "간섭받지 않고 내 페이스대로 하는 게 편해요.", "필요할 땐 확실하게, 평소엔 여유롭게!"],
-    "strengths": ["위기에도 흔들리지 않는 침착함", "실용적이고 빠른 문제 해결 능력", "새로운 기술을 금방 익히는 센스"],
-    "cautions": ["관심 없는 일엔 너무 무심해 보일 수 있어요.", "가끔은 친구에게 먼저 마음을 표현해 봐요."],
-    "matches": ["ESFJ", "ESTJ"],
-    "tips": ["실험·실습·만들기 수업에서 실력 발휘 가능 🔧", "짧고 굵게 집중하는 '뽀모도로 공부법'을 추천해요.", "체육·과학·코딩 동아리를 노려 보세요."]
-  },
-  "ISFP": {
-    "nick": "감성 충만 예술가", "emoji": "🎨", "group": "SP",
-    "summary": "하늘 색깔 하나에도 감동하는 감성 부자! 부드럽고 다정하지만 나만의 취향은 확실한 친구예요.",
-    "traits": ["예쁜 것, 감성적인 것에 마음이 잘 움직여요.", "지금 이 순간을 즐기는 걸 좋아해요.", "남을 평가하기보다 있는 그대로 받아들여요."],
-    "strengths": ["뛰어난 미적 감각과 센스", "따뜻하고 너그러운 마음", "자연스럽게 분위기를 편하게 만드는 능력"],
-    "cautions": ["갈등을 피하다 보면 속마음이 쌓일 수 있어요.", "미루기 습관이 생기지 않도록 작은 목표부터 세워봐요."],
-    "matches": ["ENFJ", "ESFJ", "ESTJ"],
-    "tips": ["필기도 예쁘게! 컬러펜 노트가 공부 의욕을 올려줘요 🖍️", "미술·음악·사진 동아리에서 감성을 펼쳐 보세요.", "좋아하는 음악과 함께하는 공부 루틴을 만들어 봐요."]
-  },
-  "INFP": {
-    "nick": "몽글몽글 꿈꾸는 시인", "emoji": "🌙", "group": "NF",
-    "summary": "마음속에 나만의 작은 우주를 품고 있는 몽상가! 순수하고 다정해서 친구의 아픔에 진심으로 공감해요.",
-    "traits": ["상상하고 이야기 만드는 걸 좋아해요.", "내가 진짜 좋아하는 것에는 엄청난 열정을 쏟아요.", "혼자 있는 시간에 감정을 정리해요."],
-    "strengths": ["깊은 공감력과 따뜻한 마음", "풍부한 상상력과 창의력", "진정성 있는 태도"],
-    "cautions": ["작은 말에도 상처받고 오래 곱씹을 수 있어요.", "현실적인 계획도 조금씩 함께 세워봐요."],
-    "matches": ["ENFJ", "ENTJ"],
-    "tips": ["좋아하는 과목부터 시작해 공부 엔진을 데워 보세요 🔥", "문예·연극·웹툰 동아리에서 재능이 꽃펴요.", "마음이 복잡할 땐 감정 일기를 써보세요."]
-  },
-  "INTP": {
-    "nick": "호기심 폭발 탐구자", "emoji": "🔭", "group": "NT",
-    "summary": "궁금한 게 생기면 밤새 검색하는 지식 탐험가! 독특한 아이디어와 날카로운 논리를 가졌어요.",
-    "traits": ["원리와 이유를 이해해야 직성이 풀려요.", "엉뚱하지만 기발한 생각을 자주 해요.", "혼자만의 생각에 깊이 빠져드는 시간이 많아요."],
-    "strengths": ["논리적인 사고력과 분석력", "새로운 관점으로 보는 창의성", "편견 없이 생각하는 열린 마음"],
-    "cautions": ["관심 없는 과제는 자꾸 미루게 될 수 있어요.", "생각을 말로 표현하는 연습을 하면 오해가 줄어요."],
-    "matches": ["ENTJ", "ESTJ"],
-    "tips": ["'왜 그럴까?' 질문하며 공부하면 기억에 오래 남아요 🧠", "과학 탐구·수학·코딩 동아리를 추천해요.", "마감 알람을 맞춰 두면 미루기 방지에 효과 만점!"]
-  },
-  "ESTP": {
-    "nick": "직진하는 모험가", "emoji": "🛹", "group": "SP",
-    "summary": "생각보다 몸이 먼저 움직이는 행동파! 에너지 넘치고 재치 있어서 어디서든 금방 친구를 사귀어요.",
-    "traits": ["새롭고 짜릿한 경험을 좋아해요.", "현실 감각이 뛰어나고 눈치가 빨라요.", "지루한 건 못 참아요!"],
-    "strengths": ["빠른 판단력과 실행력", "어떤 상황에도 적응하는 순발력", "주변을 즐겁게 만드는 유쾌함"],
-    "cautions": ["즉흥적인 결정으로 나중에 후회할 수 있어요.", "장기 목표를 위해 조금만 더 참는 연습도 필요해요."],
-    "matches": ["ISFJ", "ISTJ"],
-    "tips": ["친구와 퀴즈 대결하듯 공부하면 집중력 UP ⚡", "체육대회·축제 준비에서 리더로 활약해 보세요.", "공부는 짧게 여러 번! 타이머를 활용해 봐요."]
-  },
-  "ESFP": {
-    "nick": "반짝반짝 분위기 메이커", "emoji": "🎤", "group": "SP",
-    "summary": "교실의 비타민! 있는 곳마다 웃음꽃이 피는 타고난 엔터테이너예요.",
-    "traits": ["사람들과 어울리는 게 제일 즐거워요.", "지금 이 순간의 행복을 소중히 여겨요.", "리액션 부자라 대화가 늘 재밌어요."],
-    "strengths": ["밝고 긍정적인 에너지", "친구를 잘 챙기는 따뜻함", "센스 있는 패션·트렌드 감각"],
-    "cautions": ["재밌는 일에 빠져 해야 할 일을 놓칠 수 있어요.", "충동구매·즉흥 약속은 한 번만 더 생각해 봐요."],
-    "matches": ["ISFJ", "ISTJ"],
-    "tips": ["친구에게 설명해주며 공부하면 기억이 쏙쏙 🗣️", "축제·방송부·댄스 동아리에서 끼를 발산해 보세요.", "재밌는 보상을 걸고 공부 목표를 세워봐요!"]
-  },
-  "ENFP": {
-    "nick": "재기발랄한 활동가", "emoji": "🌈", "group": "NF",
-    "summary": "아이디어가 톡톡 튀는 행복 바이러스! 호기심 많고 열정적이라 함께 있으면 뭐든 재밌어져요.",
-    "traits": ["새로운 사람, 새로운 경험에 늘 설레요.", "관심 있는 일엔 누구보다 열정적이에요.", "감정 표현이 풍부하고 솔직해요."],
-    "strengths": ["반짝이는 창의력과 상상력", "누구와도 친해지는 친화력", "주변을 응원하는 긍정 에너지"],
-    "cautions": ["시작은 많은데 마무리가 약할 수 있어요.", "기분에 따라 컨디션이 오르락내리락할 수 있어요."],
-    "matches": ["INFJ", "INTJ"],
-    "tips": ["마인드맵으로 공부 내용을 정리하면 머리에 쏙 🌟", "학생회·축제 기획·영상 제작에서 아이디어가 빛나요.", "할 일 3개만 정해서 하나씩 끝내는 연습을 해봐요."]
-  },
-  "ENTP": {
-    "nick": "아이디어 뱅크 토론왕", "emoji": "💡", "group": "NT",
-    "summary": "'근데 그거 꼭 그래야 해?' 새로운 질문을 던지는 발상의 천재! 말솜씨와 재치로 토론을 주도해요.",
-    "traits": ["틀에 박힌 방식보다 새로운 방법을 찾아요.", "논쟁도 재밌는 게임처럼 즐겨요.", "다양한 분야에 관심이 많아요."],
-    "strengths": ["기발한 아이디어와 순발력", "설득력 있는 말솜씨", "도전을 두려워하지 않는 용기"],
-    "cautions": ["장난스러운 반박이 친구에게 상처가 될 수 있어요.", "흥미가 식으면 금방 다른 일로 넘어갈 수 있어요."],
-    "matches": ["INFJ", "INTJ"],
-    "tips": ["토론·발표 수업은 나의 무대! 적극적으로 도전해요 🎙️", "한 과목을 '선생님처럼 설명하기'로 공부해 보세요.", "시작한 프로젝트는 끝까지 완주하는 경험을 쌓아봐요."]
-  },
-  "ESTJ": {
-    "nick": "믿음직한 반장님", "emoji": "📋", "group": "SJ",
-    "summary": "체계적이고 추진력 있는 타고난 리더! 모두가 우왕좌왕할 때 '이렇게 하자'고 길을 정리해줘요.",
-    "traits": ["규칙과 질서를 중요하게 생각해요.", "일을 효율적으로 나누고 이끄는 걸 잘해요.", "솔직하고 분명하게 의견을 말해요."],
-    "strengths": ["강한 책임감과 리더십", "현실적이고 체계적인 계획력", "결정을 빠르게 내리는 추진력"],
-    "cautions": ["내 기준을 친구에게 강요하지 않도록 조심해요.", "결과만큼 친구들의 마음도 살펴봐요."],
-    "matches": ["ISFP", "ISTP", "INTP"],
-    "tips": ["반장·부장·학생회에서 리더십을 발휘해 보세요 👑", "시간표형 공부 계획이 효율 최고예요.", "조별과제에서 '고마워'를 자주 말하면 팀워크 만점!"]
-  },
-  "ESFJ": {
-    "nick": "모두의 다정한 친구", "emoji": "💐", "group": "SJ",
-    "summary": "반 친구들을 하나로 묶어주는 따뜻한 연결고리! 다정한 말 한마디로 모두를 기분 좋게 만들어요.",
-    "traits": ["친구들이 즐거워하는 모습에 행복을 느껴요.", "단체 활동과 이벤트 챙기는 걸 좋아해요.", "예의와 배려를 중요하게 생각해요."],
-    "strengths": ["뛰어난 공감력과 사교성", "모두를 챙기는 배려심", "협동을 이끄는 팀워크 능력"],
-    "cautions": ["다른 사람의 시선을 너무 신경 쓸 수 있어요.", "모두를 만족시키려다 내가 지치지 않게 해요."],
-    "matches": ["ISFP", "ISTP"],
-    "tips": ["친구와 함께하는 그룹 스터디가 잘 맞아요 👭", "학급 행사·봉사 동아리에서 빛나요.", "나를 위한 칭찬도 하루 한 번 해주기!"]
-  },
-  "ENFJ": {
-    "nick": "따뜻한 응원단장", "emoji": "📣", "group": "NF",
-    "summary": "친구의 가능성을 먼저 알아보고 응원해주는 다정한 리더! 사람을 움직이는 따뜻한 힘이 있어요.",
-    "traits": ["친구가 성장하는 모습을 보면 내 일처럼 기뻐요.", "분위기를 읽고 모두를 하나로 모아요.", "말로 마음을 전하는 데 능숙해요."],
-    "strengths": ["사람을 이끄는 따뜻한 카리스마", "깊은 공감과 소통 능력", "모두를 위한 책임감"],
-    "cautions": ["남의 고민까지 떠안아 지칠 수 있어요.", "내 감정도 친구들 감정만큼 소중히 돌봐요."],
-    "matches": ["INFP", "ISFP"],
-    "tips": ["멘토링·또래 상담 활동이 잘 어울려요 💗", "발표와 토론에서 설득력이 빛나요.", "가끔은 혼자만의 휴식 시간을 꼭 만들어요."]
-  },
-  "ENTJ": {
-    "nick": "카리스마 리더", "emoji": "👑", "group": "NT",
-    "summary": "목표가 생기면 거침없이 밀고 나가는 당당한 리더! 큰 꿈을 현실로 만드는 실행력이 있어요.",
-    "traits": ["도전적인 목표에 가슴이 뛰어요.", "효율적인 방법을 빠르게 찾아내요.", "자신감 있고 결단력 있어요."],
-    "strengths": ["강력한 추진력과 결단력", "전체를 보는 전략적 사고", "어려움을 이겨내는 의지"],
-    "cautions": ["속도가 빨라 친구들이 따라오기 힘들 수 있어요.", "가끔은 결과보다 과정을 함께 즐겨봐요."],
-    "matches": ["INFP", "INTP"],
-    "tips": ["학생회·대회 준비처럼 목표가 뚜렷한 활동이 찰떡 🏆", "주간 목표 → 일일 목표로 쪼개는 공부법을 추천해요.", "팀원의 의견을 먼저 묻는 습관이 진짜 리더를 만들어요."]
-  }
+  "ISTJ": { "character": "헤르미온느", "book": "해리 포터", "image": "images/istj.jpg", "group": "SJ",
+    "summary": "철저한 원칙과 강한 책임감으로 믿음을 주는 실천가",
+    "matches": ["ESFP", "ESTP"] },
+  "ISFJ": { "character": "점순이 어머니", "book": "동백꽃", "image": "images/isfj.jpg", "group": "SJ",
+    "summary": "세심한 배려와 헌신적인 태도로 주변을 지키는 수호자",
+    "matches": ["ESFP", "ESTP"] },
+  "INFJ": { "character": "막스 데미안", "book": "데미안", "image": "images/infj.jpg", "group": "NF",
+    "summary": "깊은 통찰력과 따뜻한 마음으로 세상을 바꾸고 싶어 하는 이상가",
+    "matches": ["ENFP", "ENTP"] },
+  "INTJ": { "character": "허생", "book": "허생전", "image": "images/intj.jpg", "group": "NT",
+    "summary": "철저한 계획과 뛰어난 전략으로 미래를 그리는 야망가",
+    "matches": ["ENFP", "ENTP"] },
+  "ISTP": { "character": "셜록 홈즈", "book": "셜록 홈즈", "image": "images/istp.jpg", "group": "SP",
+    "summary": "상황 분석에 탁월하고 조용히 과제를 해결하는 만능 재주꾼",
+    "matches": ["ESFJ", "ESTJ"] },
+  "ISFP": { "character": "홀든 콜필드", "book": "호밀밭의 파수꾼", "image": "images/isfp.jpg", "group": "SP",
+    "summary": "다정하고 온화하며 현재의 순간과 예술적 감성을 즐기는 예술가",
+    "matches": ["ENFJ", "ESFJ", "ESTJ"] },
+  "INFP": { "character": "천지", "book": "우아한 거짓말", "image": "images/infp.jpg", "group": "NF",
+    "summary": "나만의 가치관과 이상을 품고 사색을 즐기는 낭만주의자",
+    "matches": ["ENFJ", "ENTJ"] },
+  "INTP": { "character": "구보", "book": "소설가 구보 씨의 일일", "image": "images/intp.jpg", "group": "NT",
+    "summary": "호기심이 많고 문제 해결을 즐기는 냉철한 아이디어파",
+    "matches": ["ENTJ", "ESTJ"] },
+  "ESTP": { "character": "점순이", "book": "동백꽃", "image": "images/estp.jpg", "group": "SP",
+    "summary": "위험을 두려워하지 않고 순간을 즐기며 문제에 직진하는 해결사",
+    "matches": ["ISFJ", "ISTJ"] },
+  "ESFP": { "character": "흥부", "book": "흥부전", "image": "images/esfp.jpg", "group": "SP",
+    "summary": "언제 어디서나 주변을 즐겁게 만들고 인생을 만끽하는 연예인",
+    "matches": ["ISFJ", "ISTJ"] },
+  "ENFP": { "character": "앤 셜리", "book": "빨간 머리 앤", "image": "images/enfp.jpg", "group": "NF",
+    "summary": "넘치는 열정과 창의력으로 주변을 환하게 밝히는 에너자이저",
+    "matches": ["INFJ", "INTJ"] },
+  "ENTP": { "character": "말뚝이", "book": "봉산탈춤", "image": "images/entp.jpg", "group": "NT",
+    "summary": "끊임없이 새로운 가능성을 탐색하며 논쟁을 즐기는 아이디어창고",
+    "matches": ["INFJ", "INTJ"] },
+  "ESTJ": { "character": "변학도", "book": "춘향전", "image": "images/estj.jpg", "group": "SJ",
+    "summary": "체계적인 관리와 뛰어난 추진력으로 성과를 내는 관리자",
+    "matches": ["ISFP", "ISTP", "INTP"] },
+  "ESFJ": { "character": "샬롯", "book": "샬롯의 거미줄", "image": "images/esfj.jpg", "group": "SJ",
+    "summary": "뛰어난 공감 능력과 친화력으로 사람들을 한데 모으는 분위기 메이커",
+    "matches": ["ISFP", "ISTP"] },
+  "ENFJ": { "character": "영희", "book": "난장이가 쏘아올린 작은 공", "image": "images/enfj.jpg", "group": "NF",
+    "summary": "타인의 성장을 돕고 온정으로 사람들을 이끄는 친절한 리더",
+    "matches": ["INFP", "ISFP"] },
+  "ENTJ": { "character": "노영달", "book": "삼포 가는 길", "image": "images/entj.jpg", "group": "NT",
+    "summary": "확고한 비전과 강력한 리더십으로 목표를 달성하는 이사장",
+    "matches": ["INFP", "INTP"] }
 }
 </script>
 
@@ -958,15 +849,6 @@ function finishTest() {
 /* =========================================================
    결과 화면
    ========================================================= */
-function fillList(id, items) {
-  $(id).innerHTML = '';
-  items.forEach(t => {
-    const li = document.createElement('li');
-    li.textContent = t;
-    $(id).appendChild(li);
-  });
-}
-
 const KICKERS = {
   mine:   '나의 진짜 성격은...',
   shared: '친구가 공유한 성격 유형 💌',
@@ -986,11 +868,13 @@ function renderResult(type, pct, mode) {
   document.documentElement.style.setProperty('--theme-b', b);
 
   $('resultKicker').textContent = KICKERS[mode];
-  $('resultEmoji').textContent = t.emoji;
+  $('resultImg').src = t.image;
+  $('resultImg').alt = `${t.character} (${t.book})`;
   $('resultType').textContent = type;
-  $('resultNick').textContent = t.nick;
+  $('resultNick').textContent = t.character;
+  $('resultBook').textContent = `《${t.book}》`;
   $('resultSummary').textContent = t.summary;
-  document.title = `${type} ${t.nick} | 나의 진짜 성격 여행`;
+  document.title = `${type} ${t.character} | 나의 진짜 성격 여행`;
 
   // 지표 막대 그래프
   const bars = $('bars');
@@ -1032,11 +916,6 @@ function renderResult(type, pct, mode) {
     bars.innerHTML = `<p class="shared-note">🧭 지표별 비율은 직접 검사해야 볼 수 있어요!<br>나는 어떤 유형일까? 아래 버튼으로 떠나보자 ✨</p>`;
   }
 
-  fillList('resTraits', t.traits);
-  fillList('resStrengths', t.strengths);
-  fillList('resCautions', t.cautions);
-  fillList('resTips', t.tips);
-
   // 잘 맞는 유형 (누르면 그 유형 설명 보기)
   const m = $('resMatches');
   m.innerHTML = '';
@@ -1044,7 +923,7 @@ function renderResult(type, pct, mode) {
     const mt = TYPES[code];
     const chip = document.createElement('button');
     chip.className = 'match-chip';
-    chip.innerHTML = `<span class="m-emoji">${mt.emoji}</span><span class="m-type">${code}</span><span class="m-nick">${mt.nick}</span>`;
+    chip.innerHTML = `<img class="m-img" src="${mt.image}" alt=""><span class="m-type">${code}</span><span class="m-nick">${mt.character}</span>`;
     chip.addEventListener('click', () => {
       browseNext = true;   // 다음 해시 이동은 "구경" 모드로
       location.hash = code;
@@ -1095,7 +974,7 @@ async function shareResult() {
   try {
     await navigator.share({
       title: document.title,
-      text: `나는 ${type} ${TYPES[type].nick}! 너는 어떤 유형이야? 🌈`,
+      text: `나는 ${type} ${TYPES[type].character}! 너는 어떤 유형이야? 🌈`,
       url: resultUrl()
     });
   } catch (e) {
